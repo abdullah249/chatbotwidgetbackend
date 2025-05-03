@@ -17,7 +17,11 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+app = FastAPI(
+    title="Chatbot Widget Backend",
+    description="Backend API for the Chatbot Widget",
+    version="1.0.0"
+)
 
 # Configure CORS
 app.add_middleware(
@@ -39,7 +43,7 @@ except Exception as e:
 class ChatInput(BaseModel):
     message: str
 
-@app.post("/chat")
+@app.post("/api/chat")
 async def chat(input: ChatInput):
     try:
         logger.info(f"Received chat request: {input.message}")
@@ -70,7 +74,7 @@ async def chat(input: ChatInput):
             content={"response": f"Error: {str(e)}"}
         )
 
-@app.get("/health")
+@app.get("/api/health")
 async def health_check():
     return JSONResponse(content={"status": "healthy"})
 

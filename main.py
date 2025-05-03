@@ -47,8 +47,13 @@ except Exception as e:
     raise
 
 try:
-    # Initialize ChromaDB with new configuration
-    chroma_client = chromadb.PersistentClient(path=str(db_dir))
+    # Initialize ChromaDB with serverless-friendly configuration
+    if os.getenv('VERCEL'):
+        # Use in-memory client for serverless environment
+        chroma_client = chromadb.Client()
+    else:
+        # Use persistent client for local development
+        chroma_client = chromadb.PersistentClient(path=str(db_dir))
     
     # Create or get the collection
     collection = chroma_client.get_or_create_collection(
@@ -261,10 +266,4 @@ async def chat(input: ChatInput):
     except Exception as e:
         return {"response": f"Error: {str(e)}"}
 
-if __name__ == "__main__":
-    import uvicorn
-    try:
-        uvicorn.run(app, host="0.0.0.0", port=5000)
-    except Exception as e:
-        logger.error(f"Error starting server: {str(e)}")
-        sys.exit(1) 
+# The app will be imported by Vercel's serverless function handler 

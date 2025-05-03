@@ -59,7 +59,7 @@ async def chat(input: ChatInput):
                     "content": input.message
                 }
             ],
-            model="mixtral-8x7b-32768",
+            model="llama3-8b-8192",
             temperature=0.7,
             max_tokens=1024,
         )
@@ -80,4 +80,7 @@ async def health_check():
 
 @app.get("/")
 async def root():
-    return JSONResponse(content={"message": "Chatbot Widget Backend is running"}) 
+    return JSONResponse(content={"message": "Chatbot Widget Backend is running"})
+
+# Add this for Vercel serverless compatibility
+handler = app 

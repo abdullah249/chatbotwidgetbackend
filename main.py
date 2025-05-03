@@ -39,7 +39,7 @@ except Exception as e:
 class ChatInput(BaseModel):
     message: str
 
-@app.post("/api/chat")
+@app.post("/chat")
 async def chat(input: ChatInput):
     try:
         logger.info(f"Received chat request: {input.message}")
@@ -70,10 +70,10 @@ async def chat(input: ChatInput):
             content={"response": f"Error: {str(e)}"}
         )
 
-@app.get("/api/health")
+@app.get("/health")
 async def health_check():
     return JSONResponse(content={"status": "healthy"})
 
-@app.get("/api")
+@app.get("/")
 async def root():
     return JSONResponse(content={"message": "Chatbot Widget Backend is running"}) 

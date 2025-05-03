@@ -17,11 +17,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-app = FastAPI(
-    title="Chatbot Widget Backend",
-    description="Backend API for the Chatbot Widget",
-    version="1.0.0"
-)
+app = FastAPI()
 
 # Configure CORS
 app.add_middleware(
@@ -78,9 +74,6 @@ async def chat(input: ChatInput):
 async def health_check():
     return JSONResponse(content={"status": "healthy"})
 
-@app.get("/")
+@app.get("/api")
 async def root():
-    return JSONResponse(content={"message": "Chatbot Widget Backend is running"})
-
-# Add this for Vercel serverless compatibility
-handler = app 
+    return JSONResponse(content={"message": "Chatbot Widget Backend is running"}) 

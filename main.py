@@ -1,5 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import os
 import logging
@@ -41,6 +42,7 @@ class ChatInput(BaseModel):
 @app.post("/chat")
 async def chat(input: ChatInput):
     try:
+        logger.info(f"Received chat request: {input.message}")
         # Get response from Groq
         chat_completion = groq_client.chat.completions.create(
             messages=[
@@ -58,11 +60,20 @@ async def chat(input: ChatInput):
             max_tokens=1024,
         )
 
-        return {"response": chat_completion.choices[0].message.content}
+        response = chat_completion.choices[0].message.content
+        logger.info("Successfully generated response")
+        return JSONResponse(content={"response": response})
     except Exception as e:
         logger.error(f"Error in chat: {str(e)}")
-        return {"response": f"Error: {str(e)}"}
+        return JSONResponse(
+            status_code=500,
+            content={"response": f"Error: {str(e)}"}
+        )
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy"} 
+    return JSONResponse(content={"status": "healthy"})
+
+@app.get("/")
+async def root():
+    return JSONResponse(content={"message": "Chatbot Widget Backend is running"}) 

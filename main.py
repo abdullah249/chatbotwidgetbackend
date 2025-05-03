@@ -1,8 +1,6 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-import chromadb
 import os
 import logging
 import sys
@@ -32,19 +30,9 @@ app.add_middleware(
 # Initialize Groq client
 try:
     groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+    logger.info("Groq client initialized successfully")
 except Exception as e:
     logger.error(f"Error initializing Groq client: {str(e)}")
-    raise
-
-# Initialize ChromaDB with in-memory storage for serverless
-try:
-    chroma_client = chromadb.Client()
-    collection = chroma_client.get_or_create_collection(
-        name="knowledge_base"
-    )
-    logger.info("ChromaDB collection initialized successfully")
-except Exception as e:
-    logger.error(f"Error during initialization: {str(e)}")
     raise
 
 class ChatInput(BaseModel):
@@ -72,6 +60,7 @@ async def chat(input: ChatInput):
 
         return {"response": chat_completion.choices[0].message.content}
     except Exception as e:
+        logger.error(f"Error in chat: {str(e)}")
         return {"response": f"Error: {str(e)}"}
 
 @app.get("/health")
